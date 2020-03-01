@@ -46,6 +46,9 @@ public class BasicNavigation {
         driver.navigate().forward();
         Thread.sleep(3000);
         System.out.println("Title is : "+driver.getTitle());
+        System.out.println("URL is : "+driver.getCurrentUrl());
+        driver.navigate().refresh();
+        Thread.sleep(3000);
         driver.close(); // to close browser
     }
 
