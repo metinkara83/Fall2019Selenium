@@ -26,11 +26,6 @@ public class SelectByValue {
             System.out.println("TEST FAILED");
         }
 
-
-
-
-
-
         BrowserUtils.wait(3);
         driver.quit();
     }
