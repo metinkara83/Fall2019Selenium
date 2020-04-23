@@ -3,16 +3,14 @@ package com.automation.tests.vytrack;
 import com.automation.utilities.BrowserUtils;
 import com.automation.utilities.ConfigurationReader;
 import com.automation.utilities.Driver;
+import com.automation.utilities.ExcelUtil;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.*;
 
 import java.io.IOException;
 
@@ -25,15 +23,21 @@ public abstract class AbstractTestBase {
     protected ExtentHtmlReporter htmlReporter;
     protected ExtentTest test;
 
+    protected static int row = 1;
+    protected ExcelUtil excelUtil;
+
     @BeforeTest
-    public void setupTest(){
+    @Parameters("reportName")
+    public void setupTest(@Optional String reportName){
+        System.out.println("Report name: "+reportName);
+        reportName = reportName == null ? "report.html" : reportName+".html";
         report = new ExtentReports();
         String reportPath = "";
         // location of report file
         if(System.getProperty("os.name").toLowerCase().contains("win")){
-            reportPath = System.getProperty("user.dir")+"\\test-output\\report.html";
+            reportPath = System.getProperty("user.dir")+"\\test-output\\"+reportName;
         } else {
-            reportPath = System.getProperty("user.dir")+"/test-output/report.html";
+            reportPath = System.getProperty("user.dir")+"/test-output/"+reportName;
         }
         // is a HTML report itself
         htmlReporter = new ExtentHtmlReporter(reportPath);
@@ -68,6 +72,10 @@ public abstract class AbstractTestBase {
             BrowserUtils.wait(4);
             test.addScreenCaptureFromPath(screenshotPath, "Failed"); //attach screenshot
             test.fail(iTestResult.getThrowable()); //attach console output
+            // if excelUtil object was created, set value of result column to FAILED
+            if(excelUtil!=null){
+                excelUtil.setCellData("FAILED","result",row++);
+            }
         }
         Driver.closeDriver();
     }
